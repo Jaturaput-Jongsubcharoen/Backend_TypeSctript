@@ -1,4 +1,5 @@
 console.log("Hello TypeScript!");
+require('dotenv').config();
 
 import express from 'express';
 import http from 'http';
@@ -7,7 +8,9 @@ import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import cors from 'cors';
 
-require('dotenv').config();
+import { connectDB } from './config/db'
+
+
 const PORT = process.env.PORT;
 
 const app = express();
@@ -22,8 +25,24 @@ app.use(cookieParser());
 
 app.use(bodyParse.json());
 
-const server = http.createServer(app);
 
-server.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+async function startServer() {
+    try {
+        await connectDB();
+
+        const server = http.createServer(app);
+
+        server.listen(PORT, () => {
+            console.log(`Server running on http://localhost:${PORT}`);
+        });
+    }
+    catch (error) {
+        console.log(`${error}`);
+        process.exit(1);
+    }
+}
+startServer();
+
+
+
+
