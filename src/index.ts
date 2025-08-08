@@ -1,4 +1,4 @@
-console.log("Hello TypeScript!");
+console.log("Hello TypeScript! This is Jaturaput (Mac) Jongsubcharoen.");
 require('dotenv').config();
 
 import express from 'express';
@@ -8,7 +8,8 @@ import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import cors from 'cors';
 
-import { connectDB } from './config/db'
+import { connectDB } from './db/db'
+import router from './router';
 
 
 const PORT = process.env.PORT;
@@ -42,6 +43,8 @@ async function startServer() {
     }
 }
 startServer();
+
+app.use('/', router());
 
 
 

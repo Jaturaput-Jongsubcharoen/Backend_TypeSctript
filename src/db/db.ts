@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 
 require('dotenv').config();
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI = process.env.MONGO_URI!;
 
 
 export const connectDB = async () => {
@@ -10,7 +10,7 @@ export const connectDB = async () => {
         mongoose.set('strictQuery', true);
         mongoose.Promise = Promise;
 
-        await mongoose.connect(`${MONGO_URI}/tsc-testing3`);
+        await mongoose.connect(MONGO_URI, { dbName: 'tsc-testing3' });
         mongoose.connection.on('error', (error: Error) => console.log(error));
 
         const {host, port, name, readyState } = mongoose.connection;
@@ -24,10 +24,3 @@ export const connectDB = async () => {
     }
 
 };
-
-
-
-
-
-
-
