@@ -26,7 +26,7 @@ app.use(compression());
 
 app.use(cookieParser());
 
-//app.use(bodyParse.json());
+//app.use(bodyParse.json()); I dpn't use
 
 app.use(express.json());
 
