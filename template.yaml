@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  BackendFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: backend-express
+      Handler: dist/lambda.handler   # <— points at src/lambda.ts compiled output
+      Runtime: nodejs18.x
+      MemorySize: 256
+      Timeout: 15
+      Environment:
+        Variables:
+          MONGO_URI: ""                # set after deploy or here
+          FRONTEND_URL: "http://localhost:5173"
+          FRONTEND_AMPLIFY_URL: "https://main.dqkto0f9ercyg.amplifyapp.com"
+      Events:
+        ApiProxy:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY

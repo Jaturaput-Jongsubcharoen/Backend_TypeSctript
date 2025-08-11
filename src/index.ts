@@ -1,55 +1,27 @@
 console.log("Hello TypeScript! This is Jaturaput (Mac) Jongsubcharoen.");
 require('dotenv').config();
 
-import express from 'express';
 import http from 'http';
-import bodyParse from 'body-parser';
-import cookieParser from 'cookie-parser';
-import compression from 'compression';
-import cors from 'cors';
+import { connectDB } from './db/db';
+import app from './app';
 
-import { connectDB } from './db/db'
-import router from './router';
-
-const PORT = process.env.PORT;
-const FRONTEND_URL = process.env.FRONTEND_URL;
-
-const app = express();
-
-const corsOptions = {
-    origin: FRONTEND_URL,
-    credentials: true,
-};
-app.use(cors(corsOptions));
-
-app.use(compression());
-
-app.use(cookieParser());
+//import bodyParse from 'body-parser';
 
 //app.use(bodyParse.json()); I dpn't use
 
-app.use(express.json());
-
+const PORT = process.env.PORT;
 
 async function startServer() {
     try {
         await connectDB();
-
         const server = http.createServer(app);
-
         server.listen(PORT, () => {
             console.log(`Server running on http://localhost:${PORT}`);
         });
-    }
-    catch (error) {
+    } catch (error) {
         console.log(`${error}`);
         process.exit(1);
     }
 }
+
 startServer();
-
-app.use('/', router());
-
-
-
-
