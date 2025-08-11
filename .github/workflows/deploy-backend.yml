@@ -1,0 +1,60 @@
+name: Deploy Lambda
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    env:
+      AWS_REGION: us-east-1
+      LAMBDA_FUNCTION_NAME: backend-express         # <-- your Lambda name
+      DEPLOY_BUCKET: my-deploy-bucket-123456        # <-- your S3 bucket
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: Backend_TypeSctript/package-lock.json  # <-- your backend folder
+
+      - name: Install deps
+        working-directory: Backend_TypeSctript
+        run: npm ci
+
+      - name: Build
+        working-directory: Backend_TypeSctript
+        run: npm run build
+
+      - name: Prune to prod deps
+        working-directory: Backend_TypeSctript
+        run: |
+          rm -rf node_modules
+          npm ci --omit=dev
+
+      - name: Zip build
+        working-directory: Backend_TypeSctript
+        run: zip -r function.zip dist node_modules package.json
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::<ACCOUNT_ID>:role/github-oidc-lambda-deploy  # <-- replace
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Upload zip to S3
+        working-directory: Backend_TypeSctript
+        run: aws s3 cp function.zip s3://$DEPLOY_BUCKET/backend/function-${{ github.sha }}.zip
+
+      - name: Update Lambda code
+        run: aws lambda update-function-code \
+             --function-name $LAMBDA_FUNCTION_NAME \
+             --s3-bucket $DEPLOY_BUCKET \
+             --s3-key backend/function-${{ github.sha }}.zip \
+             --publish
