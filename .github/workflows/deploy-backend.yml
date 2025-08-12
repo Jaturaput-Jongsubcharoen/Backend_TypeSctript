@@ -28,25 +28,24 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: Backend_TypeSctript/package-lock.json # Yo! Please remember, Man!: Feel free to adjust if My folder is different, Bro!
+          cache-dependency-path: package-lock.json # Yo! Please remember, Man!: Feel free to adjust if My folder is different, Bro!
 
       - name: Install deps
-        working-directory: Backend_TypeSctript
         run: npm ci
 
       - name: Build
-        working-directory: Backend_TypeSctript
         run: npm run build
 
       - name: Prune to prod deps
-        working-directory: Backend_TypeSctript
         run: |
           rm -rf node_modules
           npm ci --omit=dev
 
       - name: Zip build
-        working-directory: Backend_TypeSctript
         run: zip -r function.zip dist node_modules package.json
+
+      - name: Install AWS CLI
+        uses: aws-actions/setup-aws-cli@v2
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
@@ -55,7 +54,6 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Upload zip to S3
-        working-directory: Backend_TypeSctript
         run: aws s3 cp function.zip s3://$DEPLOY_BUCKET/backend/function-${{ github.sha }}.zip
 
       - name: Update Lambda code
