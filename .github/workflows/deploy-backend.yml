@@ -46,7 +46,7 @@ jobs:
         run: zip -r function.zip dist node_modules package.json
 
       - name: Install AWS CLI
-        uses: aws-actions/setup-aws-cli@v2
+        uses: aws-actions/setup-aws-cli@v4
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
