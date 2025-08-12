@@ -1,4 +1,5 @@
 # Yo! Please remember, Man!: .github/workflows/deploy-backend.yml
+# Typo Error from Jaturaput-Jongsucharoen/Backend_TypeScrpt tp "Jaturaput-Jongsucharoen/Backend_TypeScript" in trust relationship of github-oidc-lambda-deploy
 name: Deploy Lambda
 
 on:
