@@ -1,7 +1,10 @@
+# Yo! Please remember, Man!: .github/workflows/deploy-backend.yml
 name: Deploy Lambda
+
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -9,11 +12,14 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    concurrency:
+      group: deploy-backend
+      cancel-in-progress: true
 
     env:
       AWS_REGION: us-east-1
-      LAMBDA_FUNCTION_NAME: backend-express         # <-- your Lambda name
-      DEPLOY_BUCKET: my-deploy-bucket-123456        # <-- your S3 bucket
+      LAMBDA_FUNCTION_NAME: backend-express
+      DEPLOY_BUCKET: deploy-typescript-backend-114147526883
 
     steps:
       - uses: actions/checkout@v4
@@ -22,7 +28,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: Backend_TypeSctript/package-lock.json  # <-- your backend folder
+          cache-dependency-path: Backend_TypeSctript/package-lock.json # Yo! Please remember, Man!: Feel free to adjust if My folder is different, Bro!
 
       - name: Install deps
         working-directory: Backend_TypeSctript
@@ -45,7 +51,7 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::<ACCOUNT_ID>:role/github-oidc-lambda-deploy  # <-- replace
+          role-to-assume: arn:aws:iam::114147526883:role/github-oidc-lambda-deploy
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Upload zip to S3
